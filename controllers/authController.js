@@ -10,11 +10,22 @@ exports.registerUser = async (req, res, next) => {
     try {
         const { username, password, first_name, last_name, email } = req.body;
 
-        const existingUser = await prisma.users.findUnique({ where: { username }});
-        if(existingUser){
-            return res.status(400).json({error: "Username taken!"})
+        if (!username || !password || !first_name || !last_name || !email) {
+            return res.status(400).json({ error: "All fields are required!" });
+        }
+        if (username.length < 3) {
+            return res.status(400).json({ error: "Username must be at least 3 characters long!" });
+        }
+        const existingEmail = await prisma.users.findUnique({ where: { email } });
+
+        if (existingEmail) {
+            return res.status(400).json({ error: "Email is already registered!" });
         }
 
+        const existingUsername = await prisma.users.findUnique({ where: { username }});
+        if(existingUsername){
+            return res.status(400).json({error: "Username taken!"})
+        }
         const salt = await bcrypt.genSalt();
         const hashedPassword = await bcrypt.hash(password, salt)
 
@@ -32,7 +43,7 @@ exports.registerUser = async (req, res, next) => {
         const { password:_, ...safeUser } = user
         //make sure to wrap both safeUser and token in {},
         //otherwise only on argument will be returned. 
-        res.status(201).json({safeUser, token});
+        return res.status(201).json({safeUser, token});
     } catch (error) {
         next(error);
     }
@@ -43,10 +54,13 @@ exports.loginUser = async (req, res, next) => {
     try {
         const { username, password } = req.body;
 
-      const user = await prisma.users.findUnique({
+        if(!username || !password){
+            return res.status(400).json({error: "All fields required "})
+        }
+        const user = await prisma.users.findUnique({
             where: { username },
         });
-
+        
         if (!user) {
             return res.status(400).json({ error: "Invalid username or password" });
           }
@@ -60,7 +74,7 @@ exports.loginUser = async (req, res, next) => {
           // here we create a safeUser that doesn't contain the password
           // Use "_" as a placeholder so that the json response will not have the password
           const { password:_, ...safeUser} = user;
-        res.json({safeUser, token});
+        return res.json({safeUser, token});
     } catch (error) {
         next(error); 
     }

@@ -5,7 +5,7 @@ const prisma = new PrismaClient();
 exports.getChallenges = async (req, res, next) => {
     try {
         const challenges = await prisma.challenges.findMany();
-        res.json(challenges);
+        return res.json(challenges);
     } catch (err) {
         next(err);
     }
@@ -27,7 +27,7 @@ exports.getChallenge = async (req, res, next) => {
             return res.status(404).json({ error: "Challenge not found" });
         }
 
-        res.json(challenge); 
+        return res.json(challenge); 
     } catch (error) {
         next(error); 
     }
@@ -47,7 +47,7 @@ exports.createChallenge = async (req, res, next) => {
             data: {title, description, start_date, end_date, created_at, creator_id},
         });
 
-        res.status(201).json(newChallenge);
+        return res.status(201).json(newChallenge);
     } catch (error) {
         next(error);
         
@@ -87,11 +87,11 @@ exports.updateChallenge = async (req, res, next) => {
           }
         })
     
-        res.json(updatedChallenge);
+        return res.json(updatedChallenge);
     
       } catch (error) {
         console.error(error);
-        res.status(400).json({error: "Failed to update the challenge"})
+         return res.status(400).json({error: "Failed to update the challenge"})
       }
 }
 
@@ -113,18 +113,18 @@ exports. removeChallenge = async (req, res, next) => {
             }
           })
     
-        res.json({message: "Challenge Removed", deletedChallenge});
+         return res.json({message: "Challenge Removed", deletedChallenge});
     
       } catch (error) {
         console.error(error);
-        res.status(404).json({error: "No challenge found, failed to delete the challenge"})
+        return res.status(404).json({error: "No challenge found, failed to delete the challenge"})
       }
 }
 
 //join a challenge
 exports.joinChallenge = async (req, res, next) => {
     try {
-        const challengeId = Number(req.params.challengeId);
+        const challengeId = parseInt(req.params.challengeId);
         const user_id = req.body.user_id;
         const existingParticipant = await prisma.challenge_participants.findFirst({
           where: {
@@ -148,7 +148,7 @@ exports.joinChallenge = async (req, res, next) => {
           },
         });
     
-        res.json({ message: "User joined the challenge", participant });
+        return res.json({ message: "User joined the challenge", participant });
       } catch (error) {
         console.error(error);
         next(error);
@@ -187,10 +187,10 @@ exports.leaveChallenge = async (req, res, next) => {
             }
         });
         
-        res.json({ message: "User successfully removed from challenge" });
+        return res.json({ message: "User successfully removed from challenge" });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: "Failed to leave the challenge" });
+        return res.status(500).json({ error: "Failed to leave the challenge" });
     }
 }
 

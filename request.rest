@@ -8,11 +8,11 @@ POST http://localhost:3000/auth/register
 Content-Type: application/json
 
 {
-  "username": "tsadddsidddvdart",
-  "first_name": "Trasdddvdsdidssds",
-  "last_name": "Sousddddsdtdhssers",
-  "email": "emaild22ddddd4s@esxample.com",
-  "password": "123d1ddddd23s123"
+  "username": "ja",
+  "first_name": "jarjar2",
+  "last_name": "jarjar2",
+  "email": "jarjar2@esxample.com",
+  "password": "jarjar"
 }
 
 ### login
@@ -20,6 +20,6 @@ POST http://localhost:3000/auth/login
 Content-Type: application/json
 
 {
-  "username": "sivartsivart",
-  "password": "123123123"
+  "username": "jarjr",
+  "password": "jarjar"
 }
