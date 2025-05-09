@@ -2,6 +2,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken')
 const { PrismaClient } = require("../generated/prisma");
 const prisma = new PrismaClient();
+const { BadRequestError } = require("../middleware/errorHandling")
 
 /**Use Bcrypt to salt and hash the users entered password
  * we store the password as hsahedPassword in our database.
@@ -11,20 +12,20 @@ exports.registerUser = async (req, res, next) => {
         const { username, password, first_name, last_name, email } = req.body;
 
         if (!username || !password || !first_name || !last_name || !email) {
-            return res.status(400).json({ error: "All fields are required!" });
+            throw new BadRequestError("All fields required!");
         }
         if (username.length < 3) {
-            return res.status(400).json({ error: "Username must be at least 3 characters long!" });
+            throw new BadRequestError("Username must be at least 3 characters long!");
         }
         const existingEmail = await prisma.users.findUnique({ where: { email } });
 
         if (existingEmail) {
-            return res.status(400).json({ error: "Email is already registered!" });
+            throw new BadRequestError("This email has already registered");
         }
 
         const existingUsername = await prisma.users.findUnique({ where: { username }});
         if(existingUsername){
-            return res.status(400).json({error: "Username taken!"})
+            throw new BadRequestError("Username taken!")
         }
         const salt = await bcrypt.genSalt();
         const hashedPassword = await bcrypt.hash(password, salt)
@@ -55,20 +56,20 @@ exports.loginUser = async (req, res, next) => {
         const { username, password } = req.body;
 
         if(!username || !password){
-            return res.status(400).json({error: "All fields required "})
+            throw new BadRequestError("All fields required!")
         }
         const user = await prisma.users.findUnique({
             where: { username },
         });
         
         if (!user) {
-            return res.status(400).json({ error: "Invalid username or password" });
+            throw new BadRequestError("Invalid username or password");
           }
       
           const isValid = await bcrypt.compare(password, user.password);
       
           if (!isValid) {
-            return res.status(400).json({ error: "Invalid username or password" });
+            throw new BadRequestError("Invalid username or password");
           }
           const token = jwt.sign({user: user.id}, process.env.SECRET_KEY)
           // here we create a safeUser that doesn't contain the password

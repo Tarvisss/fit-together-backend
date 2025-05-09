@@ -23,10 +23,10 @@ app.use("/likes", likesRoutes);  // Corrected to /likes
 // });
 
 /** Generic error handler; anything unhandled goes here. */
-app.use(function (err, req, res, next) {
-  if (process.env.NODE_ENV !== "test") console.error(err.stack);
-  const status = err.status || 500;
-  const message = err.message;
+app.use(function (error, req, res, next) {
+  if (process.env.NODE_ENV !== "test") console.error(error.stack);
+  const status = error.status || 500;
+  const message = error.message;
 
   return res.status(status).json({
     error: { message, status },

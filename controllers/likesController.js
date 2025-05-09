@@ -1,4 +1,4 @@
-const { PrismaClient } = require('../generated/prisma'); // or wherever your generated client is
+const { PrismaClient } = require('../generated/prisma');
 const prisma = new PrismaClient();
 
 exports.addLikeToComment = async (req, res, next) => {
