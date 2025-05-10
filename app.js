@@ -5,6 +5,7 @@ const authRoutes = require("./routes/auth");
 const commentsRoutes = require("./routes/comments");
 const challengesRoutes = require("./routes/challenges");
 const likesRoutes = require("./routes/likes");
+const { NotFoundError } = require("./middleware/errorHandling")
 
 const app = express();
 
@@ -18,11 +19,12 @@ app.use("/challenges", commentsRoutes);
 app.use("/likes", likesRoutes);  // Corrected to /likes
 
 /** Handle 404 errors -- this matches everything */
-// app.use(function (req, res, next) {
-//     return next(new NotFoundError());
-// });
+app.use(function (req, res, next) {
+    return next(new NotFoundError());
+});
 
-/** Generic error handler; anything unhandled goes here. */
+/** Generic error handler; anything unhandled gets passed into this function.*/
+
 app.use(function (error, req, res, next) {
   if (process.env.NODE_ENV !== "test") console.error(error.stack);
   const status = error.status || 500;
