@@ -71,7 +71,7 @@ exports.loginUser = async (req, res, next) => {
           if (!isValid) {
             throw new BadRequestError("Invalid username or password");
           }
-          const token = jwt.sign({user: user.id}, process.env.SECRET_KEY)
+          const token = jwt.sign({userId: user.id}, process.env.SECRET_KEY)
           // here we create a safeUser that doesn't contain the password
           // Use "_" as a placeholder so that the json response will not have the password
           const { password:_, ...safeUser} = user;

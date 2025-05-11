@@ -35,38 +35,75 @@ exports.getChallenge = async (req, res, next) => {
 
 //create a new challenge
 exports.createChallenge = async (req, res, next) => {
-    try {
-      console.log('Decoded user:', req.user);
-        const {title, description, start_date, end_date, created_at} = req.body;
-        //setting the users id to the creator id for the created challenge
-        //Decoded user: { user: 3, iat: 1746371044 } this is reason for req.user.user
+  try {
+      const {title, description, start_date, end_date, created_at} = req.body;
+      
+      // Ensure that dates are valid and convert to ISO format
+      const formattedStartDate = new Date(start_date).toISOString();
+      const formattedEndDate = new Date(end_date).toISOString(); 
+      const formattedCreatedAt = new Date(created_at).toISOString();
 
-        const creator_id = req.user.user;
+      
+      const creator_id = req.user.userId;
+      console.log("Creator ID from token:", creator_id);
+    
+      const newChallenge = await prisma.challenges.create({
+          data: {
+              title,
+              description,
+              start_date: formattedStartDate,
+              end_date: formattedEndDate,
+              created_at: formattedCreatedAt,
+              creator_id
+          },
+      });
 
-        const newChallenge = await prisma.challenges.create({
-            data: {title, description, start_date, end_date, created_at, creator_id},
-        });
-
-        return res.status(201).json(newChallenge);
-    } catch (error) {
-        next(error);
-        
-    }
+      return res.status(201).json(newChallenge);
+  } catch (error) {
+      console.error("Error during challenge creation:", error);
+      next(error);
+  }
 }
+
 
 //udate challenge details
 exports.updateChallenge = async (req, res, next) => {
     try {
-        const id = Number(req.params.id);
+        const id = parseInt(req.params.id);
     
         if(isNaN(id)){
             return res.status(400).json({ error: "Invalid ID format"})
         }
+
+        const loggedInUserId = req.user?.userId
+
+        const challenge = await prisma.challenges.findUnique({
+          where: { id },
+          select: {
+            creator_id: true
+          }
+        });
+
+        if (challenge?.creator_id !== loggedInUserId){
+          return res.status(403).json({error: "You can not edit this challenge"})
+        }
+
         const dataToUpdate = {};
         const allowedFields = ["title", "description", "start_date", "end_date"];
+        // loop through allowed fields. if field exists in req.body
+        // if one or both of the time fields are passed
+        // convert to the proper format that the DB is expecting
+        //any fields not passed are left as they were in the DB.
+        //finally, we set each field that was passed into dataToUpdate
         for (let field of allowedFields){
           if(req.body[field] !== undefined) {
-            dataToUpdate[field] = req.body[field];
+            if(field === "start_date" || field === "end_date"){
+              if (req.body[field]){
+                dataToUpdate[field] = new Date(req.body[field]).toISOString();
+              } 
+            } else {
+              dataToUpdate[field] = req.body[field];
+            }
           }
         }
         
