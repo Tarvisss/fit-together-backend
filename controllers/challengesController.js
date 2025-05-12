@@ -162,7 +162,7 @@ exports. removeChallenge = async (req, res, next) => {
 exports.joinChallenge = async (req, res, next) => {
     try {
         const challengeId = parseInt(req.params.challengeId);
-        const user_id = req.body.user_id;
+        const user_id = parseInt(req.body.user_id);
         const existingParticipant = await prisma.challenge_participants.findFirst({
           where: {
               user_id: user_id,

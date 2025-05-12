@@ -15,5 +15,7 @@ router.patch("/:username", authenticateToken, usersController.updateUser);
 // delete a user
 router.delete("/:username", authenticateToken, usersController.deleteUser);
 
+// route for challenges a user has joined
+router.get("/:id/joined_challenges", authenticateToken, usersController.getUserJoinedChallenges);
 
 module.exports = router;

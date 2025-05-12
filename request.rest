@@ -23,3 +23,17 @@ Content-Type: application/json
   "username": "jarjar",
   "password": "jarjar"
 }              
+
+
+### login
+GET  http://localhost:3000/challenges
+Content-Type: application/json
+
+### joinChallenge
+POST http://localhost:3000/challenges/2/join
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIxLCJpYXQiOjE3NDcwNjQ4OTR9.74oOPJFcwQ8UJqM2wL2FczKO9lEFdl-9t7cER6FQGfc
+
+{
+  "user_id": "21"
+}
