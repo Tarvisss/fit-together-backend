@@ -6,10 +6,11 @@ const { NotFoundError, BadRequestError } = require("../middleware/errorHandling"
 // Create new comment for a challenge
 exports.createComment = async (req, res, next) => {
     try {
-        const {user_id, content} = req.body;  
+      const user_id = req.user.userId; // Set by your authentication middleware
+      const { content } = req.body;
         const challengeId = parseInt(req.params.challengeId);
 
-        if(!user || !content){
+        if(!user_id || !content){
           throw new BadRequestError("Must be a valid user! Must provide content!")
         }
 
@@ -42,7 +43,7 @@ exports.getComments = async (req, res, next) => {
         }
 
         const challengeComments = await prisma.comments.findMany({
-            take: 10,
+            take: 15,
             where: {challenge_id: challengeId},
             orderBy: {created_at: "desc"}
         });
