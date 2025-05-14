@@ -14,7 +14,7 @@ exports.getChallenges = async (req, res, next) => {
 //get a single challenge
 exports.getChallenge = async (req, res, next) => {
     try {
-        const id = Number(req.params.id);
+        const id = parseInt(req.params.id);
 
         if(isNaN(id)){
             return res.status(400).json({ error: "Invalid ID format"})
@@ -135,7 +135,7 @@ exports.updateChallenge = async (req, res, next) => {
 //delete a challenge
 exports. removeChallenge = async (req, res, next) => {
     try {
-        const id = Number(req.params.id);
+        const id = parseInt(req.params.id);
      
         const deletedChallenge = await prisma.challenges.delete({
             where: { id },

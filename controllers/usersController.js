@@ -110,16 +110,17 @@ exports.getUserJoinedChallenges = async (req, res) => {
       const joinedChallenges = await prisma.challenge_participants.findMany({
         where: { user_id: userId },
         include: {
-          challenges: true, // this brings in the challenge details
+          challenges: true, // includes full challenge details
         },
       });
   
       const challenges = joinedChallenges.map((entry) => entry.challenges);
-  
       res.status(200).json(challenges);
     } catch (error) {
       console.error("Error fetching user joined challenges:", error);
       res.status(500).json({ message: "Server error" });
     }
   };
+  
+  
   
