@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const path = require('path')
 const userRoutes = require("./routes/users");
 const authRoutes = require("./routes/auth");
 const commentsRoutes = require("./routes/comments");
@@ -20,6 +21,7 @@ app.use("/challenges", challengesRoutes);
 app.use("/challenges", commentsRoutes);
 app.use("/likes", likesRoutes);  
 
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 /** Handle 404 errors -- this matches everything */
 app.use(function (req, res, next) {
     return next(new NotFoundError());

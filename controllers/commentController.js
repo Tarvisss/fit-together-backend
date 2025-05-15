@@ -45,7 +45,12 @@ exports.getComments = async (req, res, next) => {
         const challengeComments = await prisma.comments.findMany({
             take: 15,
             where: {challenge_id: challengeId},
-            orderBy: {created_at: "desc"}
+            orderBy: {created_at: "desc"},
+            include: {
+              // this join table will give me access to the username that created the comment
+              users: { select: { username: true, imageUrl: true } }
+
+            }
         });
         if(challengeComments.length === 0){
             res.status(200).json({ message: "No comments yet"})

@@ -10,6 +10,7 @@ const { BadRequestError } = require("../middleware/errorHandling")
 exports.registerUser = async (req, res, next) => {
     try {
         const { username, password, first_name, last_name, email } = req.body;
+        const profileImage = req.file;
 
         if (!username || !password || !first_name || !last_name || !email) {
             throw new BadRequestError("All fields required!");
@@ -30,13 +31,17 @@ exports.registerUser = async (req, res, next) => {
         const salt = await bcrypt.genSalt();
         const hashedPassword = await bcrypt.hash(password, salt)
 
+        const imageUrl = profileImage ? `/uploads/${profileImage.filename}` : null;
+
         const user = await prisma.users.create({
             data: { 
                 username, 
                 password: hashedPassword, 
                 first_name, 
                 last_name, 
-                email },
+                email,
+                imageUrl 
+            },
         });
 
         // jwt.sign() creates a JWT containing the user's ID and username in the payload, 

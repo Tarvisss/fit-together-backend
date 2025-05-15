@@ -8,7 +8,7 @@ const commentsController = require("../controllers/commentController")
 
 router.post("/:challengeId", authenticateToken, commentsController.createComment);
 //gets all comments for a challenge
-router.get("/:challengeId", authenticateToken, commentsController.getComments);
+router.get("/:challengeId/comments", authenticateToken, commentsController.getComments);
 
 // get a single comment by id
 router.get("/:challengeId/comments/:id", authenticateToken, commentsController.getComment);
