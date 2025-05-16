@@ -5,7 +5,7 @@ const userRoutes = require("./routes/users");
 const authRoutes = require("./routes/auth");
 const commentsRoutes = require("./routes/comments");
 const challengesRoutes = require("./routes/challenges");
-const likesRoutes = require("./routes/likes");
+const pinsRoutes = require("./routes/pins");
 const quoteRoutes = require("./routes/quotes")
 const { NotFoundError } = require("./middleware/errorHandling")
 
@@ -19,7 +19,7 @@ app.use("/users", userRoutes);
 app.use("/auth", authRoutes);
 app.use("/challenges", challengesRoutes);
 app.use("/challenges", commentsRoutes);
-app.use("/likes", likesRoutes);  
+app.use("/pins", pinsRoutes);  
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 /** Handle 404 errors -- this matches everything */

@@ -15,7 +15,7 @@ router.get("/:id", authenticateToken, challengeController.getChallenge);
 //patch route to update a challenge
 router.patch("/:id", authenticateToken, challengeController.updateChallenge);
 
-// //Route to delete a user
+// //Route to delete a challenge
 router.delete("/:id", authenticateToken, challengeController.removeChallenge);
 
 router.post("/:challengeId/join", authenticateToken, challengeController.joinChallenge);

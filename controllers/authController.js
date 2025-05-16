@@ -47,7 +47,7 @@ exports.registerUser = async (req, res, next) => {
         // jwt.sign() creates a JWT containing the user's ID and username in the payload, 
         // signed with a secret key (process.env.SECRET_KEY). 
         // This token is used for secure authentication and ensures that only the server can verify its integrity.
-        const token = jwt.sign({userId: user.id, username: user.username}, process.env.SECRET_KEY)
+        const token = jwt.sign({userId: user.id, username: user.username, profilePic: user.imageUrl}, process.env.SECRET_KEY)
         // here we create a safeUser that doesn't contain the password
         // Use "_" as a placeholder so that the json response will not have the password
         const { password:_, ...safeUser } = user
@@ -80,7 +80,7 @@ exports.loginUser = async (req, res, next) => {
           if (!isValid) {
             throw new BadRequestError("Invalid username or password");
           }
-          const token = jwt.sign({userId: user.id, username: user.username}, process.env.SECRET_KEY)
+          const token = jwt.sign({userId: user.id, username: user.username, profilePic: user.imageUrl}, process.env.SECRET_KEY)
           // here we create a safeUser that doesn't contain the password
           // Use "_" as a placeholder so that the json response will not have the password
           const { password:_, ...safeUser} = user;

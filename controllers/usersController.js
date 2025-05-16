@@ -122,5 +122,23 @@ exports.getUserJoinedChallenges = async (req, res) => {
     }
   };
   
+  exports.getPinnedChallenges = async (req, res) => {
+    const userId = parseInt(req.params.userId);
+    if (isNaN(userId)) {
+      return res.status(400).json({ error: "Invalid user ID" });
+    }
   
+    try {
+      const likedChallenges = await prisma.likes.findMany({
+        where: { user_id: userId },
+        include: { challenges: true }
+      });
+  
+      const challengeList = likedChallenges.map(entry => entry.challenges);
+      res.json(challengeList);
+    } catch (error) {
+      console.error("Error fetching liked challenges:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  };
   

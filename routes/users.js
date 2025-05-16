@@ -20,4 +20,7 @@ router.get("/:id/joined_challenges", authenticateToken, usersController.getUserJ
 
 router.get("/:id/full_joined_challenges", authenticateToken, usersController.getUserJoinedChallenges);
 
+//get liked challenges
+router.get("/:userId/pins", authenticateToken, usersController.getPinnedChallenges);
+
 module.exports = router;
