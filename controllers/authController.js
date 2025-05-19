@@ -9,6 +9,7 @@ const { BadRequestError } = require("../middleware/errorHandling")
  Register a new User*/ 
 exports.registerUser = async (req, res, next) => {
     try {
+        console.log("Incoming registration data:", req.body);
         const { username, password, first_name, last_name, email } = req.body;
         const profileImage = req.file;
 
@@ -35,11 +36,11 @@ exports.registerUser = async (req, res, next) => {
 
         const user = await prisma.users.create({
             data: { 
-                username, 
+                username: String(username), 
                 password: hashedPassword, 
-                first_name, 
-                last_name, 
-                email,
+                first_name: String(first_name), 
+                last_name: String(last_name), 
+                email: String(email),
                 imageUrl 
             },
         });
@@ -55,7 +56,8 @@ exports.registerUser = async (req, res, next) => {
         //otherwise only on argument will be returned. 
         return res.status(201).json({safeUser, token});
     } catch (error) {
-        next(error);
+        console.error("❌ Registration error:", error);
+        return res.status(400).json({ error: error.message });
     }
 };
 
@@ -67,6 +69,10 @@ exports.loginUser = async (req, res, next) => {
         if(!username || !password){
             throw new BadRequestError("All fields required!")
         }
+
+        if (typeof username !== "string" || typeof password !== "string") {
+            throw new BadRequestError("Username and password must be strings");
+          }
         const user = await prisma.users.findUnique({
             where: { username },
         });

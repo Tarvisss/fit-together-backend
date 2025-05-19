@@ -26,8 +26,8 @@ exports.createComment = async (req, res, next) => {
               challenge_id: challengeId},
         });
         res.status(200).json(newComment);
-      } catch (err) {
-        next(err);
+      } catch (error) {
+        next(error);
       }
 }
 
@@ -56,8 +56,8 @@ exports.getComments = async (req, res, next) => {
             res.status(200).json({ message: "No comments yet"})
         }
         res.status(200).json(challengeComments);
-      } catch (err) {
-        next(err);
+      } catch (error) {
+        next(error);
       }
 }
 

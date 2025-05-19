@@ -6,8 +6,8 @@ exports.getChallenges = async (req, res, next) => {
     try {
         const challenges = await prisma.challenges.findMany();
         return res.json(challenges);
-    } catch (err) {
-        next(err);
+    } catch (error) {
+        next(error);
     }
     
 }
