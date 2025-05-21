@@ -9,7 +9,6 @@ const { BadRequestError } = require("../middleware/errorHandling")
  Register a new User*/ 
 exports.registerUser = async (req, res, next) => {
     try {
-        console.log("Incoming registration data:", req.body);
         const { username, password, first_name, last_name, email } = req.body;
         const profileImage = req.file;
 

@@ -6,6 +6,7 @@ const { NotFoundError, BadRequestError } = require("../middleware/errorHandling"
 // Create new comment for a challenge
 exports.createComment = async (req, res, next) => {
     try {
+
       const user_id = req.user.userId; // Set by your authentication middleware
       const { content } = req.body;
         const challengeId = parseInt(req.params.challengeId);
@@ -14,9 +15,9 @@ exports.createComment = async (req, res, next) => {
           throw new BadRequestError("Must be a valid user! Must provide content!")
         }
 
-        const challegeExists = await prisma.challenges.findUnique({ where: { id: challengeId} })
+        const challengeExists = await prisma.challenges.findUnique({ where: { id: challengeId} })
 
-        if(!challegeExists){
+        if(!challengeExists){
           throw new NotFoundError("challenge not found!")
         }
         const newComment = await prisma.comments.create({
@@ -25,7 +26,7 @@ exports.createComment = async (req, res, next) => {
               content,
               challenge_id: challengeId},
         });
-        res.status(200).json(newComment);
+        res.status(201).json(newComment);
       } catch (error) {
         next(error);
       }

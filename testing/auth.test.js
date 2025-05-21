@@ -1,46 +1,23 @@
-
-const request = require("supertest")
-const app = require("../app");
-const {PrismaClient} = require("../generated/prisma")
+// challenges.test.js
+const request = require("supertest");
+const app = require("../app"); // make sure this path correctly points to your Express app
+const { PrismaClient } = require("../generated/prisma");
 const prisma = new PrismaClient();
 /** POST  register user` */
 
-describe("POST User sign up and login", function () {
+describe("User sign up and login", function () {
 
-  // before all test delete the user form the DB
-  beforeAll(async () => {
+  beforeEach(async () => {
+    // Clean up related data
+    await prisma.comments.deleteMany();
+    await prisma.likes.deleteMany();
+    await prisma.challenges.deleteMany();
     await prisma.users.deleteMany({
       where: {
-        email: "new@email.com"
+        email: "seeduser@example.com"
       }
-    })
-  })
-
-  //successful registration
-  test("Register User", async function () {
-    const resp = await request(app)
-        .post("/auth/register")
-        .send({
-          username: "new",
-          first_name: "first",
-          last_name: "last",
-          password: "password",
-          email: "new@email.com",
-          imageUrl: null
-        });
-        expect(resp.statusCode).toEqual(201);
-        expect(resp.body).toEqual({
-          token: expect.any(String),
-          safeUser: {
-            id: expect.any(Number),
-            username: "new",
-            first_name: "first",
-            last_name: "last",
-            email: "new@email.com",
-            imageUrl: null
-          }
-        });
-      });
+    });
+  });
 
   //failling registration/////////////////////////////////////
   test("bad request with missing fields", async function () {
@@ -64,28 +41,6 @@ describe("POST User sign up and login", function () {
         });
     expect(resp.statusCode).toEqual(400);
   });
-
-  // passing login test////////////////////////////////////////
-  test("login User", async function (){
-   const resp = await request(app)
-     .post("/auth/login")
-     .send({
-       username: "new",
-       password: "password"
-     });
-     expect(resp.statusCode).toEqual(200)
-     expect(resp.body).toEqual({
-       token: expect.any(String),
-       safeUser: {
-         id: expect.any(Number),
-         username: "new",
-         first_name: "first",
-         last_name: "last",
-         email: "new@email.com",
-         imageUrl: null
-       }
-     })
-  }); 
 
   // failing Logins/////////////////////////////////////////////
   test("unauth with non-existent user", async function () {

@@ -45,7 +45,6 @@ exports.createChallenge = async (req, res, next) => {
 
       
       const creator_id = req.user.userId;
-      console.log("Creator ID from token:", creator_id);
     
       const newChallenge = await prisma.challenges.create({
           data: {
@@ -92,7 +91,7 @@ exports.updateChallenge = async (req, res, next) => {
         const allowedFields = ["title", "description", "start_date", "end_date"];
         // loop through allowed fields. if field exists in req.body
         // if one or both of the time fields are passed
-        // convert to the proper format that the DB is expecting
+        // convert to the proper time format that the DB is expecting
         //any fields not passed are left as they were in the DB.
         //finally, we set each field that was passed into dataToUpdate
         for (let field of allowedFields){

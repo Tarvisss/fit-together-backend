@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "dotenv -e .env.test -- cross-env NODE_ENV=test jest"
+    "test": "dotenv -e .env.test -- cross-env NODE_ENV=test jest --runInBand"
   },
   "author": "Tarvis",
   "license": "ISC",

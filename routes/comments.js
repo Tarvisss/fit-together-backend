@@ -5,8 +5,8 @@ const {authenticateToken} = require("../middleware/authentication")
 const commentsController = require("../controllers/commentController")
 
 // Create new comment for a challenge
+router.post("/:challengeId/comments", authenticateToken, commentsController.createComment);
 
-router.post("/:challengeId", authenticateToken, commentsController.createComment);
 //gets all comments for a challenge
 router.get("/:challengeId/comments", authenticateToken, commentsController.getComments);
 
