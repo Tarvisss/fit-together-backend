@@ -40,6 +40,6 @@ To run tests after cloning the repo:
 > ✅ Make sure this test script exists in `package.json`:
 ```json
 "scripts": {
-  "test": "dotenv -e .env.test -- cross-env NODE_ENV=test jest"
+  "test": "dotenv -e .env.test -- cross-env NODE_ENV=test jest --runInBand"
 }
 ```
