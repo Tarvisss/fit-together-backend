@@ -3,6 +3,7 @@ const express = require("express");
 const router = express.Router();
 const {authenticateToken} = require("../middleware/authentication")
 const challengeController = require("../controllers/challengesController");
+
 //gets a list of all challenges
 router.get("/", authenticateToken, challengeController.getChallenges);
 

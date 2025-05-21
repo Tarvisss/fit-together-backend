@@ -64,6 +64,8 @@ async function getSingleTestComment(token, challengeId,){
     return res;
 }
 
+//PINS//////////////////////////////////////////
+
 async function pinChallenge(token, challengeId, ){
     const res = await request(app)
         .post(`/pins/challenges/${challengeId}/pins`)

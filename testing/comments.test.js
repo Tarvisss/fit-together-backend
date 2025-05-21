@@ -52,10 +52,27 @@ describe("Challenges", () => {
 
     expect(res.statusCode).toEqual(200);
   });
-  afterAll(async () => {
-    await prisma.$disconnect();
+
+  test("gets single comment", async () => {
+    const res = await getTestComments(token, challengeData.id);
+
+    expect(res.statusCode).toEqual(200);
   });
+
+  // Edge Cases //////////////////////////
   
+  test("Creating a comment without a token", async () => {
+    const testContent = "Fav Challenge!";
+    const res = await createTestComment( challengeData.id, testContent);
+
+    expect(res.statusCode).toEqual(403);
+  });
+
+  test("view comments without being logged in", async () => {
+    const res = await getTestComments( challengeData.id);
+
+    expect(res.statusCode).toEqual(403);
+  });
   afterAll(async () => {
     await prisma.$disconnect();
   });

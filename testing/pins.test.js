@@ -45,6 +45,17 @@ describe("Challenges", () => {
     expect(res.statusCode).toEqual(200);
   });
   
+  test("Pin a challenge without token", async () => {
+    const res = await pinChallenge(challengeData.id, userId);
+
+    expect(res.statusCode).toEqual(403);
+  });
+
+  test("un-Pin a challenge without token", async () => {
+    const res = await pinChallenge(challengeData.id, userId);
+
+    expect(res.statusCode).toEqual(403);
+  });
   afterAll(async () => {
     await prisma.$disconnect();
   });

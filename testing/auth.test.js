@@ -1,11 +1,9 @@
-// challenges.test.js
 const request = require("supertest");
-const app = require("../app"); // make sure this path correctly points to your Express app
+const app = require("../app");
 const { PrismaClient } = require("../generated/prisma");
 const prisma = new PrismaClient();
-/** POST  register user` */
 
-describe("User sign up and login", function () {
+describe("User register and login", function () {
 
   beforeEach(async () => {
     // Clean up related data
