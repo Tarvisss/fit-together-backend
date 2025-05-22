@@ -9,9 +9,9 @@
     "postinstall": "npm run build",
     "test": "dotenv -e .env.test -- cross-env NODE_ENV=test jest --runInBand"
   },
-  "author": "Tarvis",
-  "license": "ISC",
-  "description": "",
+  "engines": {
+    "node": "18.x"
+  },
   "dependencies": {
     "@prisma/client": "^6.6.0",
     "axios": "^1.9.0",
