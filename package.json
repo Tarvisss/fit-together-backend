@@ -5,6 +5,8 @@
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
+    "build": "prisma generate",
+    "postinstall": "npm run build",
     "test": "dotenv -e .env.test -- cross-env NODE_ENV=test jest --runInBand"
   },
   "author": "Tarvis",
@@ -21,7 +23,8 @@
     "jsonwebtoken": "^9.0.2",
     "multer": "^1.4.5-lts.2",
     "nodemon": "^3.1.10",
-    "supertest": "^7.1.1"
+    "supertest": "^7.1.1",
+    "prisma": "^6.6.0"
   },
   "devDependencies": {
     "cross-env": "^7.0.3",
