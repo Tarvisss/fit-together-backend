@@ -4,10 +4,10 @@
 # Fit+Together: Fittness made fun!
 
  **Link to Fit+Together**  
-    [https://nodejs.org](https://nodejs.org)
+    [https://fit-together-frontend.onrender.com](https://fit-together-frontend.onrender.com)
 
 ### Overview
- Fit+Together is a fitness focused social media website that allows users to partake in challenges  while becoming the best version of themselves.
+ Fit+Together is a fitness focused social media website that allows users to partake in challenges while becoming the best version of themselves.
 
 ## Core Features
  #### User Management
