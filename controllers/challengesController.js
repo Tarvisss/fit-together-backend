@@ -64,7 +64,7 @@ exports.createChallenge = async (req, res, next) => {
   }
 }
 
-
+// Route not emplemented on the frontend yet.
 //udate challenge details
 exports.updateChallenge = async (req, res, next) => {
     try {

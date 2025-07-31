@@ -59,7 +59,7 @@ model likes {
 model users {
   id                     Int                      @id @default(autoincrement())
   username               String                   @unique @db.VarChar(25)
-  password               String
+  password               String?
   first_name             String
   last_name              String
   email                  String                   @unique
@@ -68,4 +68,23 @@ model users {
   challenges             challenges[]
   comments               comments[]
   likes                  likes[]
+  DailyActivity       DailyActivity[]
+  HealthProfile       HealthProfile[]
+}
+
+model HealthProfile {
+  id Int  @id @default(autoincrement())
+  age Int 
+  height Float
+  weight Float
+  gender Boolean
+  user_id Int
+  user        users      @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model DailyActivity {
+  id Int  @id @default(autoincrement())
+  steps Int
+  user_id Int
+  user        users      @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 }

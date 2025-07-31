@@ -1,9 +1,11 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken')
+const { OAuth2Client } = require('google-auth-library');
 const { PrismaClient } = require("../generated/prisma");
 const prisma = new PrismaClient();
 const { BadRequestError } = require("../middleware/errorHandling")
 
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID); // Ensure you have the correct Google client ID in your .env
 /**Use Bcrypt to salt and hash the users entered password
  * we store the password as hsahedPassword in our database.
  Register a new User*/ 
@@ -76,9 +78,9 @@ exports.loginUser = async (req, res, next) => {
             where: { username },
         });
         
-        if (!user) {
-            throw new BadRequestError("Invalid username or password");
-          }
+        if (!user || !user.password) {
+            throw new BadRequestError("Please sign in with Google.");
+}
       
           const isValid = await bcrypt.compare(password, user.password);
       
@@ -93,4 +95,51 @@ exports.loginUser = async (req, res, next) => {
     } catch (error) {
         next(error); 
     }
+};
+
+// Google OAuth login and sign up
+exports.googleAuth = async (req, res) => {
+  const { id_token } = req.body;
+
+  try {
+    // Verify the Google token
+    const ticket = await client.verifyIdToken({
+      idToken: id_token,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+
+    const payload = ticket.getPayload();
+    const email = payload.email;
+
+    let user = await prisma.users.findUnique({
+      where: { email },
+    });
+
+    // If the user doesn't exist, create a new one (sign-up)
+    if (!user) {
+      user = await prisma.users.create({
+        data: {
+          email,
+          username: payload.name.replace(/\s+/g, '_'), // Use Google name or customize
+          first_name: payload.given_name || '',
+          last_name: payload.family_name || '',
+          imageUrl: payload.picture || null,
+        },
+      });
+    }
+
+    // Issue a JWT token for the user
+    const authToken = jwt.sign(
+      { userId: user.id, username: user.username, profilePic: user.imageUrl },
+      process.env.SECRET_KEY
+    );
+
+    // Return the token and user data excluding the password (not stored in DB in this case)
+    const { password: _, ...safeUser } = user;
+    return res.status(200).json({ safeUser, authToken });
+
+  } catch (error) {
+    console.error("❌ Google Authentication error:", error);
+    return res.status(500).json({ error: "Google authentication failed" });
+  }
 };

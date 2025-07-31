@@ -1,18 +1,28 @@
 const express = require("express");
 const cors = require("cors");
-const path = require('path')
+const path = require('path');
+
 const userRoutes = require("./routes/users");
 const authRoutes = require("./routes/auth");
 const commentsRoutes = require("./routes/comments");
 const challengesRoutes = require("./routes/challenges");
 const pinsRoutes = require("./routes/pins");
-const quoteRoutes = require("./routes/quotes")
-const { NotFoundError } = require("./middleware/errorHandling")
+const quoteRoutes = require("./routes/quotes");
+const { NotFoundError } = require("./middleware/errorHandling");
 
 const app = express();
 
-app.use(cors());
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://fit-together-frontend.onrender.com"
+];
+app.use(cors({
+  origin: allowedOrigins,  // Frontend URL
+  credentials: true,               // Allow cookies to be sent
+}));
+
 app.use(express.json());
+
 
 app.use(quoteRoutes);
 app.use("/users", userRoutes);
