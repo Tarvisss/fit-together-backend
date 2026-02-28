@@ -9,9 +9,9 @@ datasource db {
 }
 
 model challenge_participants {
-  id           Int        @id @default(autoincrement())
-  user_id      Int?
-  challenge_id Int
+  id           String     @id @default(uuid())
+  user_id      String?
+  challenge_id String
   joined_at    DateTime   @default(now()) @db.Timestamp(6)
   challenges   challenges @relation(fields: [challenge_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
   users        users?     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
@@ -20,13 +20,22 @@ model challenge_participants {
 }
 
 model challenges {
-  id                     Int                      @id @default(autoincrement())
+  id                     String                   @id @default(uuid())
   title                  String
   description            String
+  challenge_type         String?
+  difficulty             String?
   start_date             DateTime                 @db.Timestamp(6)
   end_date               DateTime?                @db.Timestamp(6)
   created_at             DateTime                 @db.Timestamp(6)
-  creator_id             Int?
+  creator_id             String?
+  event_format           String?
+  latitude               Float?
+  longitude              Float?
+  location_name          String?
+  city                   String?
+  state                  String?
+  country                String?
   challenge_participants challenge_participants[]
   users                  users?                   @relation(fields: [creator_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   comments               comments[]
@@ -34,9 +43,9 @@ model challenges {
 }
 
 model comments {
-  id           Int        @id @default(autoincrement())
-  user_id      Int?
-  challenge_id Int
+  id           String     @id @default(uuid())
+  user_id      String?
+  challenge_id String
   content      String
   created_at   DateTime   @default(now()) @db.Timestamp(6)
   challenges   challenges @relation(fields: [challenge_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
@@ -45,9 +54,9 @@ model comments {
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 model likes {
-  id           Int        @id @default(autoincrement())
-  user_id      Int
-  challenge_id Int
+  id           String     @id @default(uuid())
+  user_id      String
+  challenge_id String
   created_at   DateTime   @default(now()) @db.Timestamp(6)
   challenges   challenges @relation(fields: [challenge_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
   users        users      @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
@@ -57,7 +66,7 @@ model likes {
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 model users {
-  id                     Int                      @id @default(autoincrement())
+  id                     String                   @id @default(uuid())
   username               String                   @unique @db.VarChar(25)
   password               String?
   first_name             String
@@ -73,18 +82,18 @@ model users {
 }
 
 model HealthProfile {
-  id Int  @id @default(autoincrement())
-  age Int 
-  height Float
-  weight Float
-  gender Boolean
-  user_id Int
-  user        users      @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  id      String @id @default(uuid())
+  age     Int
+  height  Float
+  weight  Float
+  gender  Boolean
+  user_id String
+  user    users  @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 }
 
 model DailyActivity {
-  id Int  @id @default(autoincrement())
-  steps Int
-  user_id Int
-  user        users      @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  id      String @id @default(uuid())
+  steps   Int
+  user_id String
+  user    users  @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 }

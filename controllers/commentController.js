@@ -9,7 +9,7 @@ exports.createComment = async (req, res, next) => {
 
       const user_id = req.user.userId; // Set by your authentication middleware
       const { content } = req.body;
-        const challengeId = parseInt(req.params.challengeId);
+        const challengeId = req.params.challengeId;
 
         if(!user_id || !content){
           throw new BadRequestError("Must be a valid user! Must provide content!")
@@ -35,7 +35,7 @@ exports.createComment = async (req, res, next) => {
 //gets all comments for a challenge
 exports.getComments = async (req, res, next) => {
     try {
-        const challengeId = parseInt(req.params.challengeId);
+        const challengeId = req.params.challengeId;
 
         const challegeExists = await prisma.challenges.findUnique({ where: { id: challengeId} })
 
@@ -53,9 +53,6 @@ exports.getComments = async (req, res, next) => {
 
             }
         });
-        if(challengeComments.length === 0){
-            res.status(200).json({ message: "No comments yet"})
-        }
         res.status(200).json(challengeComments);
       } catch (error) {
         next(error);
@@ -66,14 +63,8 @@ exports.getComments = async (req, res, next) => {
 exports.getComment = async (req, res, next) => {
     try {
 
-        const id = parseInt(req.params.id);
-        
+        const id = req.params.id;
 
-        const challegeExists = await prisma.challenges.findUnique({ where: { id: challengeId} })
-
-        if(!challegeExists){
-          throw new NotFoundError("challenge not found!")
-        }
 
         const comment = await prisma.comments.findUnique({
             where: {id: id}
@@ -93,19 +84,13 @@ exports.updateComment = async (req, res, next) => {
     try {
         const { id } = req.params;
         const { content } = req.body;
-    
+
         if (!content || !id) {
           return res.status(400).json({ error: "Content and id is required to update comment" });
         }
-        
-        const challegeExists = await prisma.challenges.findUnique({ where: { id: challengeId} })
-
-        if(!challegeExists){
-          throw new NotFoundError("challenge not found!")
-        }
 
         const updatedComment = await prisma.comments.update({
-          where: { id: parseInt(id) },
+          where: { id: id },
           data: { content },
           select: {
             id: true,
@@ -115,7 +100,7 @@ exports.updateComment = async (req, res, next) => {
             challenge_id: true,
           },
         });
-    
+
         res.json(updatedComment);
       } catch (error) {
         console.error(error);
@@ -126,14 +111,8 @@ exports.updateComment = async (req, res, next) => {
 //delete a comment
 exports.removeComment = async (req, res, next) => {
     try {
-        const id = parseInt(req.params.id);
+        const id = req.params.id;
 
-        const challegeExists = await prisma.challenges.findUnique({ where: { id: challengeId} })
-
-        if(!challegeExists){
-          throw new NotFoundError("challenge not found!")
-        }
-        
         await prisma.comments.delete({
           where: { id: id },
         });

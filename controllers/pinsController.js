@@ -3,7 +3,7 @@ const prisma = new PrismaClient();
 
 // Add pin to challenge
 exports.addPinToChallenge = async (req, res) => {
-  const challengeId = parseInt(req.params.challengeId);
+  const challengeId = req.params.challengeId;
   const userId = req.user.userId;
   try {
     const pin = await prisma.likes.create({
@@ -21,7 +21,7 @@ exports.addPinToChallenge = async (req, res) => {
 
 // Remove pin from challenge
 exports.removePinFromChallenge = async (req, res) => {
-  const challengeId = parseInt(req.params.challengeId);
+  const challengeId = req.params.challengeId;
   const userId = req.user.userId;
 
   try {

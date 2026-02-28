@@ -9,12 +9,6 @@ router.post("/register", multer.single('image'), authController.registerUser);
 // login user
 router.post("/login", authController.loginUser);
 
-// login with google
-router.post('/google/login', authController.googleAuth);
-
-//signup with google
-router.post('/google/signup', authController.googleAuth);
-
 
 module.exports = router;
 

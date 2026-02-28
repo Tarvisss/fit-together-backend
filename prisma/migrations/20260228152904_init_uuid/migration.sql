@@ -1,8 +1,8 @@
 -- CreateTable
 CREATE TABLE "challenge_participants" (
-    "id" SERIAL NOT NULL,
-    "user_id" INTEGER,
-    "challenge_id" INTEGER NOT NULL,
+    "id" TEXT NOT NULL,
+    "user_id" TEXT,
+    "challenge_id" TEXT NOT NULL,
     "joined_at" TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "challenge_participants_pkey" PRIMARY KEY ("id")
@@ -10,22 +10,24 @@ CREATE TABLE "challenge_participants" (
 
 -- CreateTable
 CREATE TABLE "challenges" (
-    "id" SERIAL NOT NULL,
+    "id" TEXT NOT NULL,
     "title" TEXT NOT NULL,
     "description" TEXT NOT NULL,
+    "challenge_type" TEXT,
+    "difficulty" TEXT,
     "start_date" TIMESTAMP(6) NOT NULL,
     "end_date" TIMESTAMP(6),
     "created_at" TIMESTAMP(6) NOT NULL,
-    "creator_id" INTEGER,
+    "creator_id" TEXT,
 
     CONSTRAINT "challenges_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "comments" (
-    "id" SERIAL NOT NULL,
-    "user_id" INTEGER,
-    "challenge_id" INTEGER NOT NULL,
+    "id" TEXT NOT NULL,
+    "user_id" TEXT,
+    "challenge_id" TEXT NOT NULL,
     "content" TEXT NOT NULL,
     "created_at" TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
@@ -34,9 +36,9 @@ CREATE TABLE "comments" (
 
 -- CreateTable
 CREATE TABLE "likes" (
-    "id" SERIAL NOT NULL,
-    "user_id" INTEGER NOT NULL,
-    "challenge_id" INTEGER NOT NULL,
+    "id" TEXT NOT NULL,
+    "user_id" TEXT NOT NULL,
+    "challenge_id" TEXT NOT NULL,
     "created_at" TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "likes_pkey" PRIMARY KEY ("id")
@@ -44,15 +46,36 @@ CREATE TABLE "likes" (
 
 -- CreateTable
 CREATE TABLE "users" (
-    "id" SERIAL NOT NULL,
+    "id" TEXT NOT NULL,
     "username" VARCHAR(25) NOT NULL,
-    "password" TEXT NOT NULL,
+    "password" TEXT,
     "first_name" TEXT NOT NULL,
     "last_name" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "imageUrl" TEXT,
 
     CONSTRAINT "users_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "HealthProfile" (
+    "id" TEXT NOT NULL,
+    "age" INTEGER NOT NULL,
+    "height" DOUBLE PRECISION NOT NULL,
+    "weight" DOUBLE PRECISION NOT NULL,
+    "gender" BOOLEAN NOT NULL,
+    "user_id" TEXT NOT NULL,
+
+    CONSTRAINT "HealthProfile_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "DailyActivity" (
+    "id" TEXT NOT NULL,
+    "steps" INTEGER NOT NULL,
+    "user_id" TEXT NOT NULL,
+
+    CONSTRAINT "DailyActivity_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
@@ -87,3 +110,9 @@ ALTER TABLE "likes" ADD CONSTRAINT "likes_challenge_id_fkey" FOREIGN KEY ("chall
 
 -- AddForeignKey
 ALTER TABLE "likes" ADD CONSTRAINT "likes_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
+
+-- AddForeignKey
+ALTER TABLE "HealthProfile" ADD CONSTRAINT "HealthProfile_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
+
+-- AddForeignKey
+ALTER TABLE "DailyActivity" ADD CONSTRAINT "DailyActivity_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE NO ACTION;

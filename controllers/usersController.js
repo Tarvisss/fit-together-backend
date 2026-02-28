@@ -32,7 +32,7 @@ exports.getUser = async (req, res, next) => {
                 first_name: true,
                 last_name: true,
                 email: true,
-            },    
+            },
         });
 
         if (!user){
@@ -56,7 +56,7 @@ exports.updateUser = async (req, res, next) => {
             dataToUpdate[field] = req.body[field];
           }
         };
-        
+
         if(Object.keys(dataToUpdate).length === 0){
           return res.status(400).json({error: "No valid fields to update"})
         };
@@ -71,9 +71,9 @@ exports.updateUser = async (req, res, next) => {
             email: true,
           }
         });
-    
+
         res.json(updatedUser);
-    
+
     } catch (error) {
         next(error);
     };
@@ -83,7 +83,7 @@ exports.updateUser = async (req, res, next) => {
 exports.deleteUser = async (req, res, next) => {
     try {
         const {username} = req.params;
-     
+
         const deletedUser = await prisma.users.delete({
           where: {username},
           select: {
@@ -93,9 +93,9 @@ exports.deleteUser = async (req, res, next) => {
             email: true,
           }
         });
-    
+
         res.json({message: "User deleted", deletedUser});
-    
+
     } catch (error) {
         next(error);
     };
@@ -105,15 +105,15 @@ exports.deleteUser = async (req, res, next) => {
 
 exports.getUserJoinedChallenges = async (req, res) => {
     try {
-      const userId = parseInt(req.params.id);
-  
+      const userId = req.params.id;
+
       const joinedChallenges = await prisma.challenge_participants.findMany({
         where: { user_id: userId },
         include: {
           challenges: true, // includes full challenge details
         },
       });
-  
+
       const challenges = joinedChallenges.map((entry) => entry.challenges);
       res.status(200).json(challenges);
     } catch (error) {
@@ -121,19 +121,16 @@ exports.getUserJoinedChallenges = async (req, res) => {
       res.status(500).json({ message: "Server error" });
     }
   };
-  
+
   exports.getPinnedChallenges = async (req, res) => {
-    const userId = parseInt(req.params.userId);
-    if (isNaN(userId)) {
-      return res.status(400).json({ error: "Invalid user ID" });
-    }
-  
+    const userId = req.params.userId;
+
     try {
       const likedChallenges = await prisma.likes.findMany({
         where: { user_id: userId },
         include: { challenges: true }
       });
-  
+
       const challengeList = likedChallenges.map(entry => entry.challenges);
       res.json(challengeList);
     } catch (error) {
@@ -141,4 +138,3 @@ exports.getUserJoinedChallenges = async (req, res) => {
       res.status(500).json({ error: "Internal server error" });
     }
   };
-  

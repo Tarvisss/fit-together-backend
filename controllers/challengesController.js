@@ -4,21 +4,22 @@ const prisma = new PrismaClient();
 //get a list if challenges
 exports.getChallenges = async (req, res, next) => {
     try {
-        const challenges = await prisma.challenges.findMany();
+        const { city, state } = req.query;
+        const where = {};
+        if (city) where.city = { equals: city, mode: 'insensitive' };
+        if (state) where.state = { equals: state, mode: 'insensitive' };
+        const challenges = await prisma.challenges.findMany({ where });
         return res.json(challenges);
     } catch (error) {
         next(error);
     }
-    
+
 }
 //get a single challenge
 exports.getChallenge = async (req, res, next) => {
     try {
-        const id = parseInt(req.params.id);
+        const id = req.params.id;
 
-        if(isNaN(id)){
-            return res.status(400).json({ error: "Invalid ID format"})
-        }
         const challenge = await prisma.challenges.findUnique({
             where: { id },
         });
@@ -27,33 +28,43 @@ exports.getChallenge = async (req, res, next) => {
             return res.status(404).json({ error: "Challenge not found" });
         }
 
-        return res.json(challenge); 
+        return res.json(challenge);
     } catch (error) {
-        next(error); 
+        next(error);
     }
 }
 
 //create a new challenge
 exports.createChallenge = async (req, res, next) => {
   try {
-      const {title, description, start_date, end_date, created_at} = req.body;
-      
+      const {title, description, challenge_type, difficulty, start_date, end_date, created_at,
+             event_format, latitude, longitude, location_name, city, state, country} = req.body;
+
       // Ensure that dates are valid and convert to ISO format
       const formattedStartDate = new Date(start_date).toISOString();
-      const formattedEndDate = new Date(end_date).toISOString(); 
+      const formattedEndDate = new Date(end_date).toISOString();
       const formattedCreatedAt = new Date(created_at).toISOString();
 
-      
+
       const creator_id = req.user.userId;
-    
+
       const newChallenge = await prisma.challenges.create({
           data: {
               title,
               description,
+              challenge_type: challenge_type || null,
+              difficulty: difficulty || null,
               start_date: formattedStartDate,
               end_date: formattedEndDate,
               created_at: formattedCreatedAt,
-              creator_id
+              creator_id,
+              event_format: event_format ?? null,
+              latitude: latitude ?? null,
+              longitude: longitude ?? null,
+              location_name: location_name ?? null,
+              city: city ?? null,
+              state: state ?? null,
+              country: country ?? null,
           },
       });
 
@@ -68,11 +79,7 @@ exports.createChallenge = async (req, res, next) => {
 //udate challenge details
 exports.updateChallenge = async (req, res, next) => {
     try {
-        const id = parseInt(req.params.id);
-    
-        if(isNaN(id)){
-            return res.status(400).json({ error: "Invalid ID format"})
-        }
+        const id = req.params.id;
 
         const loggedInUserId = req.user?.userId
 
@@ -88,7 +95,8 @@ exports.updateChallenge = async (req, res, next) => {
         }
 
         const dataToUpdate = {};
-        const allowedFields = ["title", "description", "start_date", "end_date"];
+        const allowedFields = ["title", "description", "challenge_type", "difficulty", "start_date", "end_date",
+                               "event_format", "latitude", "longitude", "location_name", "city", "state", "country"];
         // loop through allowed fields. if field exists in req.body
         // if one or both of the time fields are passed
         // convert to the proper time format that the DB is expecting
@@ -99,13 +107,13 @@ exports.updateChallenge = async (req, res, next) => {
             if(field === "start_date" || field === "end_date"){
               if (req.body[field]){
                 dataToUpdate[field] = new Date(req.body[field]).toISOString();
-              } 
+              }
             } else {
-              dataToUpdate[field] = req.body[field];
+              dataToUpdate[field] = req.body[field] !== "" ? req.body[field] : null;
             }
           }
         }
-        
+
         if(Object.keys(dataToUpdate).length === 0){
           return res.status(400).json({error: "No valid fields to update"})
         }
@@ -116,15 +124,23 @@ exports.updateChallenge = async (req, res, next) => {
             id: true,
             title: true,
             description: true,
+            challenge_type: true,
             start_date: true,
             end_date: true,
             created_at: true,
             creator_id: true,
+            event_format: true,
+            latitude: true,
+            longitude: true,
+            location_name: true,
+            city: true,
+            state: true,
+            country: true,
           }
         })
-    
+
         return res.json(updatedChallenge);
-    
+
       } catch (error) {
         console.error(error);
          return res.status(400).json({error: "Failed to update the challenge"})
@@ -134,8 +150,8 @@ exports.updateChallenge = async (req, res, next) => {
 //delete a challenge
 exports. removeChallenge = async (req, res, next) => {
     try {
-        const id = parseInt(req.params.id);
-     
+        const id = req.params.id;
+
         const deletedChallenge = await prisma.challenges.delete({
             where: { id },
             select: {
@@ -148,9 +164,9 @@ exports. removeChallenge = async (req, res, next) => {
               creator_id: true,
             }
           })
-    
+
          return res.json({message: "Challenge Removed", deletedChallenge});
-    
+
       } catch (error) {
         console.error(error);
         return res.status(404).json({error: "No challenge found, failed to delete the challenge"})
@@ -160,22 +176,19 @@ exports. removeChallenge = async (req, res, next) => {
 //join a challenge
 exports.joinChallenge = async (req, res, next) => {
     try {
-        const challengeId = parseInt(req.params.challengeId);
-        const user_id = parseInt(req.body.user_id);
+        const challengeId = req.params.challengeId;
+        const user_id = req.body.user_id;
         const existingParticipant = await prisma.challenge_participants.findFirst({
           where: {
               user_id: user_id,
               challenge_id: challengeId
           }
         });
-  
+
         if(existingParticipant){
           return res.status(400).json({error: "already joined"})
         }
-        if (isNaN(challengeId)) {
-          return res.status(400).json({ error: "Invalid challenge ID" });
-        }
-    
+
         // Add user to challenge participants
         const participant = await prisma.challenge_participants.create({
           data: {
@@ -183,7 +196,7 @@ exports.joinChallenge = async (req, res, next) => {
             user_id: user_id,
           },
         });
-    
+
         return res.json({ message: "User joined the challenge", participant });
       } catch (error) {
         console.error(error);
@@ -194,12 +207,8 @@ exports.joinChallenge = async (req, res, next) => {
 // leave a challenge
 exports.leaveChallenge = async (req, res, next) => {
     try {
-        const challengeId = Number(req.params.challengeId);
+        const challengeId = req.params.challengeId;
         const { user_id } = req.body;
-
-        if (isNaN(challengeId) || isNaN(user_id)) {
-            return res.status(400).json({ error: "Invalid challengeId or userId" });
-        }
 
         // Check if the user is part of the challenge
         const participant = await prisma.challenge_participants.findFirst({
@@ -222,7 +231,7 @@ exports.leaveChallenge = async (req, res, next) => {
                 }
             }
         });
-        
+
         return res.json({ message: "User successfully removed from challenge" });
     } catch (error) {
         console.error(error);

@@ -5,13 +5,13 @@ const {authenticateToken} = require("../middleware/authentication")
 const challengeController = require("../controllers/challengesController");
 
 //gets a list of all challenges
-router.get("/", authenticateToken, challengeController.getChallenges);
+router.get("/", challengeController.getChallenges);
 
 // route to create a challenge;
 router.post("/", authenticateToken, challengeController.createChallenge)
 
 // get a challenge by the title
-router.get("/:id", authenticateToken, challengeController.getChallenge);
+router.get("/:id", challengeController.getChallenge);
 
 //patch route to update a challenge
 router.patch("/:id", authenticateToken, challengeController.updateChallenge);
